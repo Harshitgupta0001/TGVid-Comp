@@ -1,13 +1,35 @@
-FROM mysterysd/wzmlx:heroku
+FROM python:3.10-slim-buster
 
-WORKDIR /usr/src/app
-RUN chmod 777 /usr/src/app
+RUN mkdir /bot && chmod 777 /bot
+WORKDIR /bot
 
-RUN apt -qq update && \
-    apt-get install fontconfig -y -f
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install git wget pv jq python3-dev mediainfo gcc libsm6 libxext6 libfontconfig1 libxrender1 libgl1-mesa-glx -y
+
+COPY --from=mwader/static-ffmpeg:6.1 /ffmpeg /usr/local/bin/
+COPY --from=mwader/static-ffmpeg:6.1 /ffprobe /usr/local/bin/
 
 COPY . .
+RUN pip3 install --no-cache-dir -U -r requirements.txt
 
-RUN pip3 install -r requirements.txt
+CMD ["bash","run.sh"]
 
-CMD ["bash", "run.sh"]
+
+
+
+
+
+
+#FROM mysterysd/wzmlx:heroku
+
+#WORKDIR /usr/src/app
+#RUN chmod 777 /usr/src/app
+
+#RUN apt -qq update && \
+#    apt-get install fontconfig -y -f
+
+#COPY . .
+
+#RUN pip3 install -r requirements.txt
+
+#CMD ["bash", "run.sh"]
